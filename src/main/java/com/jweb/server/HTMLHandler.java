@@ -13,7 +13,7 @@ public class HTMLHandler implements HttpHandler {
         URI path = URI.create(exchange.getHttpContext().getPath());
         String filename = path.relativize(uri).getPath();
         if (filename.isEmpty()) filename = "index.html";
-        File file = new File(filename);
+        File file = new File("web/" + filename);
         OutputStream os = exchange.getResponseBody();
 
         if (file.exists() && file.isFile()) {
