@@ -32,15 +32,37 @@ public class ToDoService extends ServiceHandler
                             LocalDateTime.parse(request.fields().get("deadline").get(0)));
                     yield item.toString();
                 }
+                case "replace-item" -> {
+                    ToDoItem newItem = new ToDoItem(request.fields().get("id").get(0),
+                                                    request.user(),
+                                                    request.fields().get("title").get(0),
+                                                    request.fields().get("description").get(0),
+                                                    LocalDateTime.parse(request.fields().get("deadline").get(0)));
+                    item = replaceItem(newItem);
+                    if (item == null) {
+                        statusCode = 404;
+                        yield "Not found";
+                    }
+                    else
+                        yield item.toString();
+                }
                 case "remove-item" -> {
                     item = removeItem(request.params().get("id").get(0));
                     yield item.toString();
                 }
                 case "get-item" -> {
                     item = getItem(request.params().get("id").get(0));
-                    yield item.toString();
+                    if (item == null) {
+                        statusCode = 404;
+                        yield "Not found";
+                    }
+                    else yield item.toString();
                 }
                 case "get-list" -> getList(request.user()).toString();
+                case "empty-list" -> {
+                    emptyList(request.user());
+                    yield "List emptied for user " + request.user();
+                }
                 default -> {
                     statusCode = 404;
                     yield "Function <" + request.function() + "> not Found";
