@@ -5,12 +5,52 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 
 public abstract class ServiceHandler implements HttpHandler
 {
+    HashMap<String, Function<ServiceRequest, ServiceResponse>> methods = new HashMap<>();
+
+    public final void addMethod(String name, Function<ServiceRequest, ServiceResponse> method)
+    {
+        methods.put(name, method);
+    }
+
+    @Override
+    public final void handle(HttpExchange exchange) throws IOException
+    {
+        ServiceResponse response;
+
+        try
+        {
+            ServiceRequest request = parseRequest(exchange);
+            Function<ServiceRequest, ServiceResponse> method = methods.get(request.function());
+
+            if (method != null)
+            {
+                response = method.apply(request);
+            }
+            else
+            {
+                response = new ServiceResponse(404, "Function <" + request.function() + "> not Found");
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            response = new ServiceResponse(500, e.getMessage());
+        }
+
+        exchange.sendResponseHeaders(response.statusCode(), response.response().length());
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.response().getBytes());
+        os.close();
+    }
+
     public static ServiceRequest parseRequest(HttpExchange exchange) throws IOException
     {
         Map<String, List<String>> fields = parseBodyFields(exchange);
