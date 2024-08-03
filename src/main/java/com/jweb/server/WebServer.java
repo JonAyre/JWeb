@@ -1,6 +1,6 @@
 package com.jweb.server;
 
-import com.jweb.todolist.ToDoService;
+import com.jweb.todolist.ToDoHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -14,8 +14,8 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
         // Create a context for a specific path and set the handler
-        server.createContext("/todolist", new ToDoService());
-        server.createContext("/test", new TestService());
+        server.createContext("/todolist", new ToDoHandler());
+        server.createContext("/test", new TestHandler());
         server.createContext("/", new HTMLHandler());
 
         // Start the server

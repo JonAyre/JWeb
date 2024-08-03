@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class TestService extends ServiceHandler
+public class TestHandler extends ServiceHandler
 {
     @Override
     public void handle(HttpExchange exchange) throws IOException
