@@ -35,12 +35,12 @@ public class ToDoService
         return toDoItems.get(itemId);
     }
 
-    public ArrayList<ToDoItem> getList(String Owner)
+    public ToDoList getList(String Owner)
     {
         ArrayList<ToDoItem> list = new ArrayList<>();
         for (ToDoItem item : toDoItems.values())
             if (Owner.equals(item.owner())) list.add(item);
-        return list;
+        return new ToDoList(list);
     }
 
     public void emptyList(String owner)

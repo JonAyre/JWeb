@@ -29,7 +29,7 @@ public class ToDoHandler extends ServiceHandler {
                 request.fields().get("description").get(0),
                 LocalDateTime.parse(request.fields().get("deadline").get(0)));
 
-        return new ServiceResponse(200, item.toString());
+        return new ServiceResponse(200, gson.toJson(item));
     }
 
     private ServiceResponse getItem(ServiceRequest request) {
@@ -37,7 +37,7 @@ public class ToDoHandler extends ServiceHandler {
         if (item == null)
             return new ServiceResponse(404, "Not found");
         else
-            return new ServiceResponse(200, item.toString());
+            return new ServiceResponse(200, gson.toJson(item));
     }
 
     private ServiceResponse updateItem(ServiceRequest request) {
@@ -51,7 +51,7 @@ public class ToDoHandler extends ServiceHandler {
         if (item == null)
             return new ServiceResponse(404, "Not found");
         else
-            return new ServiceResponse(200, item.toString());
+            return new ServiceResponse(200, gson.toJson(item));
     }
 
     private ServiceResponse removeItem(ServiceRequest request) {
@@ -59,11 +59,11 @@ public class ToDoHandler extends ServiceHandler {
         if (item == null)
             return new ServiceResponse(404, "Not found");
         else
-            return new ServiceResponse(200, item.toString());
+            return new ServiceResponse(200, gson.toJson(item));
     }
 
     private ServiceResponse getList(ServiceRequest request) {
-        return new ServiceResponse(200, todoService.getList(request.user()).toString());
+        return new ServiceResponse(200, gson.toJson(todoService.getList(request.user())));
     }
 
     private ServiceResponse emptyList(ServiceRequest request) {

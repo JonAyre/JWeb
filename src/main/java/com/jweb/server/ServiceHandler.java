@@ -1,5 +1,8 @@
 package com.jweb.server;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.Gson;
+import com.jweb.utils.LocalDateTimeSerializer;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -8,12 +11,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
 public abstract class ServiceHandler implements HttpHandler
 {
     HashMap<String, Function<ServiceRequest, ServiceResponse>> methods = new HashMap<>();
+    protected Gson gson =  new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer()).create();
 
     public final void addMethod(String name, Function<ServiceRequest, ServiceResponse> method)
     {
