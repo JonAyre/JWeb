@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <title>Home</title>
+</head>
+<body>
+    This is the home page<br>
+    <form action="/todolist/add-item" method="post">
+        <label>Title
+            <input type="text" name="title" />
+        </label><br>
+        <label>Description
+            <input type="text" name="description" />
+        </label><br>
+        <label>Deadline
+            <input type="datetime-local" name="deadline" />
+        </label><br>
+        <button type="submit" value="submit">Submit</button>
+    </form>
+</body>
+</html>
