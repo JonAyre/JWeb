@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
 import java.net.URI;
+import java.nio.file.Files;
 
 public class HTMLHandler implements HttpHandler {
     @Override
@@ -12,25 +13,27 @@ public class HTMLHandler implements HttpHandler {
         URI uri = exchange.getRequestURI();
         URI path = URI.create(exchange.getHttpContext().getPath());
         String filename = path.relativize(uri).getPath();
-        if (filename.isEmpty()) filename = "index.html";
-        File file = new File("web/" + filename);
         OutputStream os = exchange.getResponseBody();
-
-        if (file.exists() && file.isFile()) {
-            BufferedReader fileReader = new BufferedReader(new FileReader(file));
-            StringBuilder fileContent = new StringBuilder();
-            String line;
-            while ((line = fileReader.readLine()) != null) {
-                fileContent.append(line).append("\n");
-            }
-
-            exchange.sendResponseHeaders(200, fileContent.length());
-            os.write(fileContent.toString().getBytes());
+        if (filename.isEmpty())
+        {
+            String response = "<!DOCTYPE html><html lang=\"en\"><head><meta http-equiv=\"refresh\" content=\"0; url=index.html\" /></head><body></body></html>";
+            exchange.sendResponseHeaders(200, response.length());
+            os.write(response.getBytes());
             os.close();
-        } else {
-            String msg = "File not found";
-            exchange.sendResponseHeaders(404, msg.length());
-            os.write(msg.getBytes());
+        }
+        else
+        {
+            File file = new File("web/" + filename);
+            if (file.exists() && file.isFile()) {
+                byte[] fileContent = Files.readAllBytes(file.toPath());
+                exchange.sendResponseHeaders(200, fileContent.length);
+                os.write(fileContent);
+                os.close();
+            } else {
+                String msg = "File not found";
+                exchange.sendResponseHeaders(404, msg.length());
+                os.write(msg.getBytes());
+            }
         }
         os.close();
     }

@@ -49,7 +49,7 @@ public abstract class ServiceHandler implements HttpHandler
             e.printStackTrace();
             response = new ServiceResponse(500, e.getMessage());
         }
-
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(response.statusCode(), response.response().length());
         OutputStream os = exchange.getResponseBody();
         os.write(response.response().getBytes());

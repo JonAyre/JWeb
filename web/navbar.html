@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand fixed-top navbar-light border-bottom bg-light">
+    <div id="navbar_outer" class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <img src="logo.png" alt="Air - the essential element" width="40" height="40" class="d-inline-block align-text-top">
+        </a>
+        <div class="collapse navbar-collapse">
+            <div class="navbar-nav" id="navitems">
+                <a class="nav-link" href="index.html">Home</a>
+                <a class="nav-link" href="showlist.html">To-do list</a>
+                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">About</a>
+            </div>
+            <script>
+                $(function(){
+                    var current = location.pathname;
+                    $('#navitems a').each(function(){
+                        var $this = $(this);
+                        // if the current path is like this link, make it active
+                        if(current.indexOf($this.attr('href')) !== -1){
+                            $this.addClass('active');
+                        }
+                    })
+                })
+            </script>
+        </div>
+    </div>
+</nav>
+<div id="navbar_padding"></div>
+<script>
+    $(document).ready(function() {
+        $("#navbar_padding").css("height", $("#navbar_outer").height()+10);
+    });
+</script>
