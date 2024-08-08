@@ -19,11 +19,11 @@
                     var list = document.getElementById(listID);
                     list.innerHTML = '';
                     var items = response['items'];
-                    if (items.length == 0) {
-                        var li = document.createElement('li');
-                        li.className = 'list-group-item list-group-item-action p-2';
-                        li.innerHTML = '<div class="w-100"><h3>Your to-do list is empty!</h3><h4>Time to go outside and touch grass</h4></div>';
-                        list.appendChild(li);
+                    if (items.length === 0) {
+                        var empty = document.createElement('li');
+                        empty.className = 'list-group-item list-group-item-action p-2';
+                        empty.innerHTML = '<div class="w-100"><h3>Your to-do list is empty!</h3><h4>Time to go outside and touch grass</h4></div>';
+                        list.appendChild(empty);
                     }
                     for (var i = 0; i < items.length; ++i) {
                         if (i > 0) {
@@ -48,8 +48,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            //makeToast('itemAddedContainer', 'itemAdded', "To-do list", "To-do list item added");
-            $('#itemAdded').toast();
+            makeToast('itemAddedContainer', 'itemAdded', "To-do list", "To-do list item added");
         });
 
         $(function(){
@@ -59,15 +58,17 @@
                     url: "/todolist/add-item",
                     type: "POST",
                     data: $('#addItemForm').serialize(),
-                    success: function(data){
+                    success: function() {
                         showToast('itemAdded');
                         populateList('todoList');
+                    },
+                    error: function (xhr, status) {
+                        alert(status + ' ' + xhr.status + ': ' + xhr.responseText);
                     }
                 });
             });
         });
     </script>
-
 
 </head>
 <body>
@@ -119,17 +120,7 @@
         </div>
     </div>
 
-    <div id="itemAddedContainer" class="toast-container position-absolute p-3 top-50 start-50 translate-middle">
-        <div id="itemAdded" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
-            <div class="toast-header">
-                <strong class="me-auto">To-do list</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-            </div>
-            <div class="toast-body text-muted">
-                <h2>Item successfully added</h2>
-            </div>
-        </div>
-    </div>
+    <div id="itemAddedContainer" class="toast-container position-absolute p-3 top-50 start-50 translate-middle"></div>
 
 </body>
 </html>
