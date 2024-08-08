@@ -3,7 +3,7 @@ package com.jweb.server;
 public class TestHandler extends ServiceHandler
 {
     public TestHandler() {
-        addMethod("", this::alive);
+        addMethod("ping", this::alive, "", "");
     }
 
     private ServiceResponse alive(ServiceRequest request)

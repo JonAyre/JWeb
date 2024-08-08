@@ -17,27 +17,33 @@ import java.util.function.Function;
 
 public abstract class ServiceHandler implements HttpHandler
 {
-    HashMap<String, Function<ServiceRequest, ServiceResponse>> methods = new HashMap<>();
+    private record Method(Function<ServiceRequest, ServiceResponse> function, ArrayList<String> fieldNames, ArrayList<String> paramNames){}
+
+    HashMap<String, Method> methods = new HashMap<>();
     protected Gson gson =  new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer()).create();
 
-    public final void addMethod(String name, Function<ServiceRequest, ServiceResponse> method)
+    public final void addMethod(String name, Function<ServiceRequest, ServiceResponse> method, String fieldNames, String paramNames)
     {
-        methods.put(name, method);
+        ArrayList<String> fields = new ArrayList<>();
+        ArrayList<String> params = new ArrayList<>();
+        if (fieldNames != null && !fieldNames.isBlank()) fields = new ArrayList<>(Arrays.asList(fieldNames.trim().split("\\s*,\\s*")));
+        if (paramNames != null && !paramNames.isBlank()) params = new ArrayList<>(Arrays.asList(paramNames.trim().split("\\s*,\\s*")));
+        methods.put(name, new Method(method, fields, params));
     }
 
     @Override
     public final void handle(HttpExchange exchange) throws IOException
     {
         ServiceResponse response;
-
         try
         {
             ServiceRequest request = parseRequest(exchange);
-            Function<ServiceRequest, ServiceResponse> method = methods.get(request.function());
+            Method method = methods.get(request.function());
 
             if (method != null)
             {
-                response = method.apply(request);
+                checkInputs(request, method);
+                response = method.function.apply(request);
             }
             else
             {
@@ -56,10 +62,32 @@ public abstract class ServiceHandler implements HttpHandler
         os.close();
     }
 
+    private void checkInputs(ServiceRequest request, Method method) throws IOException
+    {
+        ArrayList<String> missingFields = new ArrayList<>();
+        ArrayList<String> missingParams = new ArrayList<>();
+
+        for (String fieldName : method.fieldNames())
+        {
+            if (!request.fields().containsKey(fieldName)) missingFields.add(fieldName);
+        }
+
+        for (String paramName : method.paramNames())
+        {
+            if (!request.params().containsKey(paramName)) missingParams.add(paramName);
+        }
+
+        if (!missingFields.isEmpty() || !missingParams.isEmpty()) {
+            throw new IOException("Error calling service function.\nMissing params: " + missingParams + "\nMissing fields: " + missingFields);
+        }
+    }
+
     public static ServiceRequest parseRequest(HttpExchange exchange) throws IOException
     {
-        Map<String, List<String>> fields = parseBodyFields(exchange);
-        Map<String, List<String>> params = parseQueryFields(exchange);
+        String query = exchange.getRequestURI().getQuery();
+        String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+        Map<String, List<String>> fields = parseFields(body);
+        Map<String, List<String>> params = parseFields(query);
         Headers headers = exchange.getRequestHeaders();
         List<String> users = headers.get("user-id");
         String user = "test";
@@ -71,11 +99,10 @@ public abstract class ServiceHandler implements HttpHandler
         return new ServiceRequest(user, function, fields, params);
     }
 
-    private static Map<String, List<String>> parseBodyFields(HttpExchange exchange) throws IOException
-    {
+    private static Map<String, List<String>> parseFields(String body) {
         Map<String, List<String>> parameters = new LinkedHashMap<>();
+        if (body == null || body.isBlank()) return parameters;
 
-        String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         String[] keyValuePairs = body.split("&");
 
         for (String keyValuePair : keyValuePairs)
@@ -92,26 +119,6 @@ public abstract class ServiceHandler implements HttpHandler
         }
 
         return parameters;
-    }
-
-    private static Map<String, List<String>> parseQueryFields(HttpExchange exchange) {
-        final Map<String, List<String>> query_pairs = new LinkedHashMap<>();
-        String query = exchange.getRequestURI().getQuery();
-
-        if (query == null || query.isEmpty()) return query_pairs;
-
-        final String[] pairs = query.split("&");
-        for (String pair : pairs)
-        {
-            final int idx = pair.indexOf("=");
-            final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8) : pair;
-            if (!query_pairs.containsKey(key)) {
-                query_pairs.put(key, new LinkedList<>());
-            }
-            final String value = idx > 0 && pair.length() > idx + 1 ? URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8) : null;
-            query_pairs.get(key).add(value);
-        }
-        return query_pairs;
     }
 
 }

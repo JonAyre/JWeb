@@ -14,12 +14,12 @@ public class ToDoHandler extends ServiceHandler {
     {
         todoService = new ToDoService();
         userService = new UserService();
-        addMethod("add-item", this::addItem);
-        addMethod("get-item", this::getItem);
-        addMethod("update-item", this::updateItem);
-        addMethod("remove-item", this::removeItem);
-        addMethod("get-list", this::getList);
-        addMethod("empty-list", this::emptyList);
+        addMethod("add-item", this::addItem, "title, description, deadline", "");
+        addMethod("get-item", this::getItem, "", "id");
+        addMethod("update-item", this::updateItem, "id, title, description, deadline", "");
+        addMethod("remove-item", this::removeItem, "", "id");
+        addMethod("get-list", this::getList, "", "");
+        addMethod("empty-list", this::emptyList, "", "");
     }
 
     private ServiceResponse addItem(ServiceRequest request)
