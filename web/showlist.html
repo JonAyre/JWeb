@@ -82,39 +82,40 @@
         <ul class="list-group list-group-flush" id="todoList">
             <script>populateList('todoList')</script>
         </ul>
-        <button type="button" class="btn btn-primary rounded-pill mt-3 w-100 p-0 fw-bold" style="font-size: xx-large"
-                    data-bs-toggle="modal" data-bs-target="#staticBackdrop">+</button>
+        <button type="button" class="btn btn-outline-primary rounded-pill mt-3 w-100 p-0 fw-bold" style="font-size: x-large" data-bs-toggle="modal" data-bs-target="#addItemModal">+</button>
         </div>
     </div>
 
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="addItemModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">Add item</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-0">
                     <form id="addItemForm" method="post">
-                        <div class="container mt-3 p-3 bg-body-secondary rounded">
+                        <div class="container p-3 bg-body-secondary">
                             <div>
-                                <label class="form-label" for="title">Title</label>
+                                <label class="form-label mb-1" for="title">Title</label>
                                 <input type="text" class="form-control" id="title" name="title" placeholder="Title">
                             </div>
                             <div class="mt-2">
-                                <label class="form-label" for="deadline">Deadline</label>
+                                <label class="form-label mb-1" for="deadline">Deadline</label>
                                 <input type="datetime-local" class="form-control" id="deadline" name="deadline" placeholder="Deadline">
                             </div>
                             <div class="mt-2">
-                                <label class="form-label" for="description">Description</label>
+                                <label class="form-label mb-1" for="description">Description</label>
                                 <textarea class="form-control" rows="3" id="description" name="description" placeholder="Description"></textarea>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" style="max-width:120px" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-                    <button id='addItem' type="submit" style="max-width:120px" class="btn btn-primary rounded-pill me-2" data-bs-dismiss="modal">Add Item</button>
+                    <div class="btn-group d-flex justify-content-end w-100">
+                        <button type="button" style="max-width:120px" class="btn btn-secondary rounded-pill me-2" data-bs-dismiss="modal">Cancel</button>
+                        <button id='addItem' type="submit" style="max-width:120px" class="btn btn-primary rounded-pill" data-bs-dismiss="modal">Add Item</button>
+                    </div>
                 </div>
             </div>
         </div>
