@@ -16,7 +16,8 @@ public class ToDoHandler extends ServiceHandler {
         userService = new UserService();
         addMethod("add-item", this::addItem, "title, description, deadline", "");
         addMethod("get-item", this::getItem, "", "id");
-        addMethod("update-item", this::updateItem, "id, title, description, deadline", "");
+        addMethod("update-item", this::updateItem, "id, title, description, deadline, status", "");
+        addMethod("update-item-status", this::updateItemStatus, "id, status", "");
         addMethod("remove-item", this::removeItem, "", "id");
         addMethod("get-list", this::getList, "", "");
         addMethod("empty-list", this::emptyList, "", "");
@@ -46,7 +47,26 @@ public class ToDoHandler extends ServiceHandler {
                 request.user(),
                 request.fields().get("title").get(0),
                 request.fields().get("description").get(0),
+                request.fields().get("status").get(0),
                 LocalDateTime.parse(request.fields().get("deadline").get(0)));
+        ToDoItem item = todoService.updateItem(newItem);
+        if (item == null)
+            return new ServiceResponse(404, "Not found");
+        else
+            return new ServiceResponse(200, gson.toJson(item));
+    }
+
+    private ServiceResponse updateItemStatus(ServiceRequest request) {
+        ToDoItem oldItem = todoService.getItem(request.fields().get("id").get(0));
+        if (!oldItem.owner().equals(request.user()))
+            return new ServiceResponse(401, "Not authorised - user is not owner");
+        ToDoItem newItem = new ToDoItem(
+                oldItem.id(),
+                request.user(),
+                oldItem.title(),
+                oldItem.description(),
+                request.fields().get("status").get(0),
+                oldItem.deadline());
         ToDoItem item = todoService.updateItem(newItem);
         if (item == null)
             return new ServiceResponse(404, "Not found");

@@ -9,7 +9,7 @@ public class ToDoService
 
     public ToDoItem addItem(String owner, String title, String description, LocalDateTime deadline)
     {
-        ToDoItem item = new ToDoItem(UUID.randomUUID().toString(), owner, title, description, deadline);
+        ToDoItem item = new ToDoItem(UUID.randomUUID().toString(), owner, title, description, "open", deadline);
         toDoItems.put(item.id(), item);
         return item;
     }
