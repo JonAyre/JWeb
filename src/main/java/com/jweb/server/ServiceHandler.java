@@ -56,9 +56,10 @@ public abstract class ServiceHandler implements HttpHandler
             response = new ServiceResponse(500, e.getMessage());
         }
         exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(response.statusCode(), response.response().length());
+        byte[] bytes = response.response().getBytes();
+        exchange.sendResponseHeaders(response.statusCode(), bytes.length);
         OutputStream os = exchange.getResponseBody();
-        os.write(response.response().getBytes());
+        os.write(bytes);
         os.close();
     }
 

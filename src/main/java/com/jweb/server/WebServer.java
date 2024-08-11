@@ -1,5 +1,6 @@
 package com.jweb.server;
 
+import com.jweb.chat.ChatHandler;
 import com.jweb.todolist.ToDoHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.cli.*;
@@ -46,8 +47,9 @@ public class WebServer {
         HttpServer server = HttpServer.create(new InetSocketAddress(ip, port), 0);
 
         // Create a context for a specific path and set the handler
-        server.createContext("/todolist", new ToDoHandler());
-        server.createContext("/test", new TestHandler());
+        server.createContext("/todolist/", new ToDoHandler());
+        server.createContext("/test/", new TestHandler());
+        server.createContext("/chat/", new ChatHandler());
         server.createContext("/", new HTMLHandler());
 
         // Start the server
