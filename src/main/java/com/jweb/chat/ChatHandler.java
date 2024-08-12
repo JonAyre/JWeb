@@ -1,8 +1,6 @@
 package com.jweb.chat;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jweb.server.ServiceHandler;
 import com.jweb.server.ServiceRequest;
@@ -17,6 +15,11 @@ import java.util.HashMap;
 
 public class ChatHandler extends ServiceHandler
 {
+    private record Message(String role, String content){}
+    private record Conversation(ArrayList<Message> messages){}
+
+    HashMap<String, Conversation> conversations = new HashMap<>();
+
     private static final String OLLAMA_API_URL = "http://192.168.1.246:11434/api/chat";
 
     public ChatHandler()
@@ -26,18 +29,30 @@ public class ChatHandler extends ServiceHandler
 
     private ServiceResponse prompt(ServiceRequest request)
     {
+        Conversation conversation;
+        String prompt = request.params().get("prompt").get(0);
+
+        if (conversations.containsKey(request.user()))
+        {
+            conversation = conversations.get(request.user());
+        }
+        else
+        {
+            conversation = new Conversation(new ArrayList<>());
+            prompt = "Keeping your answer to one or two short sentences, " + prompt;
+            conversations.put(request.user(), conversation);
+        }
+        conversation.messages.add(new Message("user", prompt));
+
         try
         {
             HttpClient client = HttpClient.newHttpClient();
             JsonObject requestBody = new JsonObject();
-            String prompt = "Keeping your answer to one or two very short sentences, " + request.params().get("prompt").get(0);
-            JsonArray prompts = new JsonArray(1);
-            JsonObject message = new JsonObject();
-            message.addProperty("role", "user");
-            message.addProperty("content", prompt);
-            prompts.add(message);
-            requestBody.add("messages", prompts);
+            requestBody.add("messages", gson.toJsonTree(conversation.messages()));
             HttpRequest chatRequest;
+
+            JsonObject options = new JsonObject();
+            requestBody.add("options", options);
 
             requestBody.addProperty("model", "gemma2:2b");
             requestBody.addProperty("stream", false);
@@ -53,8 +68,9 @@ public class ChatHandler extends ServiceHandler
             if (response.statusCode() == 200)
             {
                 JsonObject responseBody = new Gson().fromJson(response.body(), JsonObject.class);
-                //String answer = responseBody.getAsJsonObject("message").get("content").getAsString();
-                return new ServiceResponse(200, responseBody.getAsJsonObject("message").toString());
+                JsonObject message = responseBody.getAsJsonObject("message");
+                conversation.messages.add(new Message(message.get("role").getAsString(), message.get("content").getAsString()));
+                return new ServiceResponse(200, message.toString());
             } else {
                 return new ServiceResponse(504,"Failed to get chat response: " + response.body());
             }
@@ -64,6 +80,5 @@ public class ChatHandler extends ServiceHandler
             e.printStackTrace();
             return new ServiceResponse(504,"Error calling chat service: " + e.getMessage());
         }
-
     }
 }
