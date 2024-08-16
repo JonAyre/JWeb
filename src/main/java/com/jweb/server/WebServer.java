@@ -1,6 +1,7 @@
 package com.jweb.server;
 
-import com.jweb.chat.ChatHandler;
+import com.jweb.ai.ChatHandler;
+import com.jweb.ai.MicrobotHandler;
 import com.jweb.todolist.ToDoHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.cli.*;
@@ -50,6 +51,7 @@ public class WebServer {
         server.createContext("/todolist/", new ToDoHandler());
         server.createContext("/test/", new TestHandler());
         server.createContext("/chat/", new ChatHandler());
+        server.createContext("/microbot/", new MicrobotHandler());
         server.createContext("/", new HTMLHandler());
 
         // Start the server

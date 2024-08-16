@@ -1,4 +1,4 @@
-package com.jweb.chat;
+package com.jweb.ai;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
