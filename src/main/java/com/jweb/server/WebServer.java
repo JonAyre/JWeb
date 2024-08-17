@@ -1,8 +1,5 @@
 package com.jweb.server;
 
-import com.jweb.ai.ChatHandler;
-import com.jweb.ai.MicrobotHandler;
-import com.jweb.todolist.ToDoHandler;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.cli.*;
@@ -16,20 +13,6 @@ public class WebServer
 {
     HttpServer server;
 
-    // Main Method
-    public static void main(String[] args) throws IOException
-    {
-        HashMap<String, HttpHandler> handlers = new HashMap<>();
-        handlers.put("/chat/", new ChatHandler());
-        handlers.put("/todolist/", new ToDoHandler());
-        handlers.put("/microbot/", new MicrobotHandler());
-        handlers.put("/test/", new TestHandler());
-        handlers.put("/", new HTMLHandler());
-
-        WebServer server = new WebServer(parseArgsToAddress(args), handlers);
-        server.start();
-    }
-
     public WebServer(String[] args, HashMap<String, HttpHandler> routes) throws IOException
     {
         this(parseArgsToAddress(args), routes);
@@ -40,11 +23,13 @@ public class WebServer
         // Create the server to listen on the specified socket address
         server = HttpServer.create(address, 0);
 
-        // Create a context for each of the specified routes
+        // Create a context for each of the specified routes (plus the standard default routes)
         for (Map.Entry<String, HttpHandler> entry : routes.entrySet())
         {
             addRoute(entry.getKey(), entry.getValue());
         }
+        addRoute("/test/", new TestHandler());
+        addRoute("/", new HTMLHandler());
     }
 
     public static InetSocketAddress parseArgsToAddress(String[] args)
@@ -89,7 +74,7 @@ public class WebServer
     {
         server.setExecutor(null); // Use the default executor
         server.start();
-        System.out.println("Server is running on " + server.getAddress());
+        System.out.println("Server is running on " + server.getAddress().toString());
     }
 
     public void stop()
