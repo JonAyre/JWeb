@@ -15,7 +15,7 @@
         function populateList(listID) {
             console.log('1');
             $.ajax({
-                url: 'todolist/get-list',
+                url: '/todolist/get-list',
                 method: 'GET',
                 success: function (response) {
                     var list = document.getElementById(listID);
