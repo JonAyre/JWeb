@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="JWeb:jar">
+  <artifact type="jar" build-on-make="true" name="JWeb:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/JWeb_jar</output-path>
     <root id="archive" name="JWeb.jar">
       <element id="module-output" name="JWeb" />
