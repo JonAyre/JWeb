@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class WebServer
 {
@@ -72,7 +73,7 @@ public class WebServer
     // Start the server
     public void start()
     {
-        server.setExecutor(null); // Use the default executor
+        server.setExecutor(Executors.newCachedThreadPool()); // Use the default executor
         server.start();
         System.out.println("Server is running on " + server.getAddress().toString());
     }
